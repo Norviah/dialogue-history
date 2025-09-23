@@ -13,6 +13,14 @@ rm -rf "${paths[ROOT]}/install"
 mkdir "${paths[ROOT]}/install"
 cd "${paths[ROOT]}/install"
 
+
+if [ ! -f "${paths[ROOT]}${paths[ARCHIVE]}" ]; then
+  echo "wolvenkit not found"
+  exit
+fi
+
+7z x "${paths[ROOT]}${paths[ARCHIVE]}"
+
 mkdir -p "${paths[REDSCRIPT_PATH]}"
 cp -r "${paths[ROOT]}/redscript/" "${paths[REDSCRIPT_PATH]}/${paths[NAME]}"
 
@@ -20,3 +28,5 @@ cp -r "${paths[ROOT]}/input" "${paths[ROOT]}/install/${paths[INPUT_PATH]}"
 
 # Zip the install directory.
 7z a -tzip "${paths[NAME]}.zip" *
+
+rm -rf "${paths[ROOT]}${paths[ARCHIVE]}"

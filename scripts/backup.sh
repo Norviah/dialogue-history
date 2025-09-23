@@ -16,13 +16,15 @@ files=$(ls -1 "${paths[BACKUP]}" | wc -l)
 # generate the name for the backup
 # if no arguments are provided, use the number of files as the name
 if [ -z "$argv" ]; then
-  name="$files"
+  name="$((files + 2))"
 else
   name="$argv"
 fi
 
+echo "$name"
+
 # delete any mod files from the git directory
-source "${paths[ROOT]}/scripts/delete.sh" 
+source "${paths[ROOT]}/scripts/delete.sh"
 
 # ensure the input loader directory exists
 mkdir -p "${paths[ROOT]}/input"

@@ -1,16 +1,20 @@
 <?xml version="1.0"?>
 <bindings>
   <context name="VehicleDriveBase" append="true">
-    <action name="ShowDialogueHistory" map="ShowDialogueHistory_Button" />
+    <action name="OpenDialogueHistory" map="OpenDialogueHistory_Button" />
   </context>
 
   <context name="Locomotion" append="true">
-    <action name="ShowDialogueHistory" map="ShowDialogueHistory_Button" />
+    <action name="OpenDialogueHistory" map="OpenDialogueHistory_Button" />
   </context>
 
   <context name="CameraMovement" append="true">
-    <action name="ShowDialogueHistory" map="ShowDialogueHistory_Button" />
+    <action name="OpenDialogueHistory" map="OpenDialogueHistory_Button" />
   </context>
+
+	<context name="UIMenu" append="true">
+		<action name="toggle_dialogue_history" map="OpenDialogueHistory_Button" priority="-1" />
+	</context>
 
   <!-- You can change the hotkeys here -->
   <!-- Supported input keys: https://nativedb.red4ext.com/e/1069987916070430 -->
@@ -20,7 +24,7 @@
   <buttonGroup id="DH_Pad_Binding" timeWindow="0.08f" >
     <button id="IK_Pad_DigitLeft" />
     <button id="IK_Pad_X_SQUARE" />
-  </buttonGroup> 
+  </buttonGroup>
 
   <!-- Keyboard binding -->
 
@@ -28,7 +32,7 @@
     <button id="IK_L" />
   </buttonGroup>
 
-  <mapping name="ShowDialogueHistory_Button" type="Button">
+  <mapping name="OpenDialogueHistory_Button" type="Button">
     <button id="DH_Pad_Binding" />
     <button id="DH_Keyboard_Binding" />
 	</mapping>

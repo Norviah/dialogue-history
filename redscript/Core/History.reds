@@ -1,125 +1,154 @@
 module DialogueHistory.Core
 
-import DialogueHistory.Utils.LineData
-import DialogueHistory.Utils.String.StrToProperCase
-import Codeware.Localization.LocalizationSystem
+import DialogueHistory.Globals.StrToProperCase
+import DialogueHistory.Structs.{Area, DialogueLine, TimeFormat, TimeStamp}
+
 
 public class History extends ScriptableSystem {
-  private persistent let m_days: array<ref<Day>>;
+  private persistent let m_conversations: array<ref<Conversation>>;
 
   private let m_config: ref<Config>;
-  private let m_translator: ref<LocalizationSystem>;
-  private let m_callBackID: Uint32;
-  private let m_lastID: CRUID;
 
-  private func OnAttach() -> Void {
-    this.m_config = Config.Get();
-    this.m_translator = LocalizationSystem.GetInstance(this.GetGameInstance());
+  private let m_timeSystem: ref<TimeSystem>;
 
-    this.RegisterTimeSystemListener();
+  private let m_preventionSystem: ref<PreventionSystem>;
+
+  private let m_subtitleManager: ref<SubtitleManager>;
+
+  public func OnAttach() -> Void {
+    this.m_config = Config.GetInstance();
+    this.m_timeSystem = GameInstance.GetTimeSystem(this.GetGameInstance());
+    this.m_preventionSystem = GameInstance.GetScriptableSystemsContainer(this.GetGameInstance()).Get(n"PreventionSystem") as PreventionSystem;
+    this.m_subtitleManager = SubtitleManager.GetInstance();
   }
 
- private func OnDetach() -> Void {
+  public func OnDetach() -> Void {
     this.m_config = null;
-    this.m_translator = null;
-
-    // this.UnregisterTimeSystemListener();
+    this.m_timeSystem = null;
+    this.m_preventionSystem = null;
+    this.m_subtitleManager = null;
   }
 
-  private func RegisterTimeSystemListener() -> Void {
-    let timeSystem: ref<TimeSystem> = this.GetGameInstance().GetTimeSystem();
-    let desiredTime: GameTime = GameTime.MakeGameTime(0, 0, 0, 0);
-    let timeout: GameTime = GameTime.MakeGameTime(0, 24, 0, 0);
-
-    let request: ref<DailyCallbackRequest> = new DailyCallbackRequest();
-    
-    request.m_callBackID = timeSystem.RegisterScriptableSystemIntervalListener(n"DialogueHistory.Core.History", request, desiredTime, timeout, -1);
-    this.m_callBackID = request.m_callBackID;
-  }
-
-  private func UnregisterTimeSystemListener() -> Void {
-    this.GetGameInstance().GetTimeSystem().UnregisterListener(this.m_callBackID);
-  }
-
-  private final func OnDailyCallbackRequest(request: ref<DailyCallbackRequest>) -> Void {
-    if !this.m_config.lifecycle {
-      return;
-    }
-
-    let gameTime = GameInstance.GetTimeSystem(this.GetGameInstance()).GetGameTime();
-    let currentDayNumber: Int32 = gameTime.Days();
-
-    for day in this.GetDays() {
-      if Abs(currentDayNumber - day.GetNumber()) > this.m_config.lifecycleDays {
-        this.DeleteDay(day);
-      }
-    }
-  } 
-
-  public func AddLine(line: scnDialogLineData) -> Void {
-     if Equals(line.id, this.m_lastID) || (this.m_config.ignorePersistentLines && line.isPersistent) {
-      return;
-    }
-
-    let displayText = line.GetDisplayText();
-    let text: String;
-
-    if NotEquals(displayText.language, scnDialogLineLanguage.Origin) && NotEquals(displayText.translation, "")  {
-      text = displayText.translation;
-    } else {
-      text = line.text;
-    }
-
-    let rawSpeaker: String;
-
-    if Equals(line.speakerName, "") {
-      rawSpeaker = this.m_translator.GetText("DialogueHistory-UI-Log-UnknownSpeaker");
-    } else {
-      rawSpeaker = line.speakerName;
-    }
-
-    let speaker: String = StrContains(rawSpeaker, "_") ? StrToProperCase(rawSpeaker) : rawSpeaker;
-    
-    let gameTime: GameTime = this.GetGameInstance().GetTimeSystem().GetGameTime();
-    let lineData: LineData = new LineData(StringToName(speaker), StringToName(text), line.type, gameTime.Hours(), gameTime.Minutes());
-
-    this.GetToday(gameTime.Days()).AddLine(lineData);
-    this.m_lastID = line.id;
+  public func GetConversations() -> [ref<Conversation>] {
+    return this.m_conversations;
   }
 
   public func GetSize() -> Int32 {
-    return ArraySize(this.m_days);
+    return ArraySize(this.m_conversations);
   }
 
-  public func DeleteDay(day: wref<Day>) -> Void {
-    ArrayRemove(this.m_days, day);
+  public func IsEmpty() -> Bool {
+    return Equals(this.GetSize(), 0);
   }
 
-  public func GetToday(num: Int32) -> ref<Day> {
-    let latest: ref<Day> = ArrayLast(this.m_days);
+  protected func AddConversation(conversation: ref<Conversation>) -> Void {
+    ArrayPush(this.m_conversations, conversation);
+  }
 
-    if IsDefined(latest) && latest.Is(num) {
-      return latest;
-    } else if IsDefined(latest) {
-      latest.SetPast();
+  public func RemoveConversation(conversation: wref<Conversation>) -> Void {
+    ArrayRemove(this.m_conversations, conversation);
+  }
+
+  protected func CreateConversation(resourcePath: String) -> ref<Conversation> {
+    if this.m_config.limitConversation {
+      this.TrimConversations();
     }
 
-    let newDay: ref<Day> = new Day();
-    newDay.Initialize(num);
-    ArrayPush(this.m_days, newDay);
+    let conversation: ref<Conversation> = Conversation.Initialize(resourcePath);
+    this.AddConversation(conversation);
 
-    return newDay;
+    return conversation;
   }
 
-  public func GetDays() -> array<ref<Day>> {
-    return this.m_days;
+  protected func TrimConversations() -> Void {
+    let maxLength: Int32 = this.m_config.conversationLimit;
+
+    for conversation in this.m_conversations {
+      if !conversation.IsSaved() {
+        let length: Int32 = this.GetSize();
+
+        if length >= maxLength {
+          this.RemoveConversation(conversation);
+        } else {
+          return;
+        }
+      }
+    }
   }
 
-  public static func Get(gameInstance: GameInstance) -> ref<History> {
+  protected func FindConversationForResourcePath(path: String) -> ref<Conversation> {
+    for conversation in this.m_conversations {
+      if conversation.IsFromResourcePath(path) {
+        return conversation;
+      }
+    }
+
+    return null;
+  }
+
+  protected func GetConversation(resourcePath: String) -> ref<Conversation> {
+    let conversation: ref<Conversation> = this.FindConversationForResourcePath(resourcePath);
+
+    if IsDefined(conversation) {
+      return conversation;
+    } else {
+      return this.CreateConversation(resourcePath);
+    }
+  }
+
+  protected func ReIndexConversation(conversation: ref<Conversation>) -> Void {
+    if NotEquals(ArrayLast(this.m_conversations), conversation) {
+      this.RemoveConversation(conversation);
+      this.AddConversation(conversation);
+    }
+  }
+
+  public func AddLine(rawLine: scnDialogLineData) -> Void {
+    if rawLine.isPersistent {
+      return;
+    }
+
+    let line: DialogueLine = this.ParseLineData(rawLine);
+    let resourceSubtitleResource: SubtitleResource = this.m_subtitleManager.FindResource(rawLine);
+    let conversation: ref<Conversation> = this.GetConversation(resourceSubtitleResource.m_path);
+    conversation.AddLine(line);
+
+    this.ReIndexConversation(conversation);
+  }
+
+  protected func ParseLineData(lineData: scnDialogLineData) -> DialogueLine {
+    let displayData: scnDialogDisplayString = scnDialogLineData.GetDisplayText(lineData);
+    let text: String;
+
+    if NotEquals(displayData.language, scnDialogLineLanguage.Origin) && NotEquals(displayData.translation, "")  {
+      text = displayData.translation;
+    } else if scnDialogLineData.HasMothertongueTag(lineData) {
+      text = s"\(displayData.preTranslatedText)\(displayData.text)\(displayData.postTranslatedText)";
+    } else {
+      text = lineData.text;
+    }
+
+    let rawSpeakerName: String;
+
+    let puppet: wref<NPCPuppet> = lineData.speaker as NPCPuppet;
+    let affiliation: wref<Affiliation_Record> = TweakDBInterface.GetCharacterRecord(puppet.GetRecordID()).Affiliation();
+
+    if IsDefined(puppet) && IsDefined(affiliation) && (Equals(lineData.speakerName, "NC Resident")) {
+      rawSpeakerName = Equals(affiliation.Type(), gamedataAffiliation.Unaffiliated) ? lineData.speakerName : ToString(affiliation.EnumName());
+    } else if Equals(lineData.speakerName, "") {
+      rawSpeakerName = GetLocalizedTextByKey(n"DialogueHistory-UI-UnknownSpeaker");
+    } else {
+      rawSpeakerName = lineData.speakerName;
+    }
+
+    let speakerName: String = StrContains(rawSpeakerName, "_") ? StrToProperCase(rawSpeakerName) : rawSpeakerName;
+    let timestamp: TimeStamp = TimeStamp.Initialize(this.m_timeSystem.GetGameTime());
+    let area: Area = Area.Initialize(this.m_preventionSystem.GetCurrentDistrict().GetDistrictRecord());
+
+    return DialogueLine(StringToName(speakerName), StringToName(text), lineData.type, timestamp, area);
+  }
+
+  public final static func GetInstance(gameInstance: GameInstance) -> ref<History> {
     return GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DialogueHistory.Core.History") as History;
   }
-}
-
-public class DailyCallbackRequest extends ScriptableSystemRequest {
-  public let m_callBackID: Uint32;
 }

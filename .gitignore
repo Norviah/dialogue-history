@@ -4,3 +4,6 @@
 install/
 backup/
 TODO.md
+
+wolvenkit/
+!wolvenkit/packed/**/*
