@@ -12,8 +12,9 @@ private final func AddDialogueHistoryMenuItem() -> Void {
   let root: ref<inkCompoundWidget> = this.GetRootCompoundWidget();
   let panel: ref<inkCompoundWidget> = root.GetWidgetByPathName(n"mainMenu/buttonsContainer/panel_journal") as inkCompoundWidget;
 
+  let isHotscenesModInstalled: Bool = GameInstance.GetResourceDepot().ArchiveExists("hotscenes_archive.stage.archive");
   let menuItem: ref<inkCanvas> = this.SpawnFromLocal(panel, n"menu_button") as inkCanvas;
-  menuItem.SetMargin(inkMargin(0.0, -170.0, 0.0, 0.0));
+  menuItem.SetMargin(inkMargin(0.0, isHotscenesModInstalled ? -339.0 : -170.0, 0.0, 0.0));
   menuItem.SetName(n"dialogue_history");
 
   let image: wref<inkImage> = menuItem.GetWidgetByPathName(n"inkFlexWidget4/container/image") as inkImage;
