@@ -49,6 +49,11 @@
       "hidden": false
     },
     {
+      "type": "localization",
+      "name": "Localization",
+      "hidden": false
+    },
+    {
       "type": "chore",
       "hidden": true
     },
