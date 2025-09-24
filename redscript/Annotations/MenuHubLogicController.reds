@@ -24,7 +24,7 @@ private final func AddDialogueHistoryMenuItem() -> Void {
   data.fullscreenName = n"dialogue_history";
   data.identifier = 999;
   data.parentIdentifier = 5;
-  data.label = "Dialogue History";
+  data.label = GetLocalizedTextByKey(n"DialogueHistory-Title");
   data.icon = n"talk";
 
   (menuItem.GetController() as MenuItemController).Init(data);
