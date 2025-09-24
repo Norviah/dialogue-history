@@ -85,7 +85,7 @@ public class ConversationListItemController extends inkVirtualCompoundItemContro
     let string: [String] = [];
 
     for type in types {
-      ArrayPush(string, s"\(type)");
+      ArrayPush(string, GetLocalizedTextByKey(StringToName(s"DialogueHistory-DialogueLineType-\(type)")));
     }
 
     return ArrayJoin(string, ",");
