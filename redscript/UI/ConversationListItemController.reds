@@ -61,7 +61,7 @@ public class ConversationListItemController extends inkVirtualCompoundItemContro
     let array: [String] = [];
 
     if this.m_config.showDay {
-      ArrayPush(array, s"Day \(lastLine.timestamp.day)");
+      ArrayPush(array, s"\(GetLocalizedTextByKey(n"UI-Labels-Day")) \(lastLine.timestamp.day)");
     }
 
     if this.m_config.showTimestamps {
