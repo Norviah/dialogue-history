@@ -14,9 +14,9 @@ public func StrToProperCase(string: String) -> String {
   let i: Int32 = 0;
 
   while i < ArraySize(words) {
-    let word: String = words[i];
+    let word: String = StrFrontToUpper(words[i]);
     let end: String = i < ArraySize(words) - 1 ? " " : "";
-    string += StrFrontToUpper(word) + end;
+    string += (Equals(word, "Ad") ? s"(\(GetLocalizedTextByKey(n"Story-base-gameplay-static_data-database-scanning-main_quests-q105-q105_jigjig_hologram_function_localizedDescription")))" : word) + end;
 
     i += 1;
   }
