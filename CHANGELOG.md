@@ -1,3 +1,21 @@
+## [v2.0.2](https://github.com/Norviah/dialogue-history/compare/v2.0.0...v2.0.2) (2025-10-06)
+
+### Bug Fixes
+
+- add compatibility with the menu item for the hotscenes mod <code>[dd10a5d](https://github.com/Norviah/dialogue-history/commit/dd10a5db6639a917f7c614438b469da71d03d1eb)</code>
+
+### Build System
+
+- **bump**: add `localization` commit type <code>[7346422](https://github.com/Norviah/dialogue-history/commit/73464229bae3fcadc7b9d550539aa11d59d535d9)</code>
+
+### Localization
+
+- add localization keys for the various dialogue line types <code>[46b8b52](https://github.com/Norviah/dialogue-history/commit/46b8b5233a14d40cc0f9a5bb5636d2b4f6e350fc)</code>
+
+- make the menu item point to the localization key "DialogueHistory-Title" <code>[58528e3](https://github.com/Norviah/dialogue-history/commit/58528e3b291070c8acfd754610d18397771d337a)</code>
+
+## [v2.0.0](https://github.com/Norviah/dialogue-history/compare/v1.1.2...v2.0.0) (2025-09-23)
+
 ## [v1.1.2](https://github.com/Norviah/dialogue-history/compare/v1.1.1...v1.1.2) (2025-01-10)
 
 ### Bug Fixes
