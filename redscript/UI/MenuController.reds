@@ -327,6 +327,10 @@ public class DialogueHistoryMenuController extends gameuiMenuGameController {
       this.m_filterButtonController.SetData(data);
       this.m_conversationListDataView.SetCategoryFilter(identifier);
       this.PlaySound(n"Button", n"OnPress");
+
+      if NotEquals(this.m_conversationListDataView.Size(), 0u) {
+        this.ShowConversation(this.GetMostRecentConversation());
+      }
     };
   }
 
