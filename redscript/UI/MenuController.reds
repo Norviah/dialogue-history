@@ -204,6 +204,18 @@ public class DialogueHistoryMenuController extends gameuiMenuGameController {
     inkWidgetRef.SetVisible(this.m_noDataAvailableTextRef, true);
   }
 
+  protected final func GetMostRecentConversation() -> wref<Conversation> {
+    let dataView: ref<ConversationListItemData>;
+
+    if NotEquals(this.m_conversationListDataView.Size(), 0u) {
+      dataView = this.m_conversationListDataView.GetItem(0u) as ConversationListItemData;
+    } else {
+      dataView = this.m_conversationListDataSource.GetItem(0u) as ConversationListItemData;
+    }
+
+    return dataView.m_conversation;
+  }
+
   protected func ShowConversation(ref: wref<Conversation>) -> Void {
     this.m_selectedConversation = ref;
 
@@ -219,7 +231,7 @@ public class DialogueHistoryMenuController extends gameuiMenuGameController {
     if Equals(size, 0u) {
       this.ShowNoDataWarning();
     } else if !IsDefined(this.m_selectedConversation) {
-      this.ShowConversation((this.m_conversationListDataSource.GetItem(0u) as ConversationListItemData).m_conversation);
+      this.ShowConversation(this.GetMostRecentConversation());
     }
   }
 
@@ -248,10 +260,7 @@ public class DialogueHistoryMenuController extends gameuiMenuGameController {
     if ArraySize(data) > 0 {
       this.m_conversationListDataSource.Reset(data);
 
-      let recentConversationData = data[0] as ConversationListItemData;
-      let recentConversation = recentConversationData.m_conversation;
-
-      this.ShowConversation(recentConversation);
+      this.ShowConversation(this.GetMostRecentConversation());
       this.ShowData();
     } else {
       this.ShowNoDataWarning();
