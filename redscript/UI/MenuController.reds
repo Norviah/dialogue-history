@@ -279,8 +279,8 @@ public class DialogueHistoryMenuController extends gameuiMenuGameController {
   protected cb func OnUpdateButtonHints(event: ref<UpdateButtonHintsEvent>) -> Bool {
     this.ResetButtonHints();
 
-    this.m_buttonHintsController.AddButtonHint(n"upgrade_cyberware", GetLocalizedTextByKey(n"DialogueHistory-UI-DeletePrompt-Label")); // E / X / Square
     this.m_buttonHintsController.AddButtonHint(n"UI_smart_frame_remove", GetLocalizedTextByKey(event.m_conversation.IsSaved() ? n"DialogueHistory-UI-UnsaveConversation" : n"DialogueHistory-UI-SaveConversation")); // R / Y / Triangle
+    this.m_buttonHintsController.AddButtonHint(n"upgrade_cyberware", GetLocalizedTextByKey(n"DialogueHistory-UI-DeletePrompt-Label")); // E / X / Square
 
     if NotEquals(this.m_selectedConversation, event.m_conversation) {
       this.m_buttonHintsController.AddButtonHint(n"click", GetLocalizedTextByKey(n"DialogueHistory-UI-ShowConversation"));
