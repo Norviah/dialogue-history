@@ -66,7 +66,7 @@ class ConversationListDataView extends ScriptableDataView {
     return false;
   }
 
-  public func HasTerm(conversation: wref<Conversation>) -> Bool {
+  public func ConversationHasTerm(conversation: wref<Conversation>) -> Bool {
     let lines: [DialogueLine] = conversation.GetLines();
 
     for line in lines {
@@ -78,24 +78,32 @@ class ConversationListDataView extends ScriptableDataView {
     return false;
   }
 
+  protected func ConversationHasCategory(conversation: wref<Conversation>) -> Bool {
+    for type in conversation.GetTypes() {
+      if Equals(this.m_category, DialogueLineTypeToCategory(type)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   public func FilterItem(data: ref<IScriptable>) -> Bool {
     let conversation: wref<Conversation> = (data as ConversationListItemData).m_conversation;
 
-    if this.HasSearchTerm() && !this.HasTerm(conversation) {
+    if this.m_saveFilter && !conversation.IsSaved() {
       return false;
     }
 
-    if this.IsDefaultCategory() {
-      return this.m_saveFilter ? conversation.IsSaved() : true;
-    } else {
-      for type in conversation.GetTypes() {
-        if Equals(this.m_category, DialogueLineTypeToCategory(type)) {
-          return this.m_saveFilter ? conversation.IsSaved() : true;
-        }
-      }
-
+    if !this.IsDefaultCategory() && !this.ConversationHasCategory(conversation) {
       return false;
     }
+
+    if this.HasSearchTerm() && !this.ConversationHasTerm(conversation) {
+      return false;
+    }
+
+    return true;
   }
 
   public func SortItem(left: ref<IScriptable>, right: ref<IScriptable>) -> Bool {
