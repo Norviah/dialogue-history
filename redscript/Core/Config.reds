@@ -468,7 +468,7 @@ public class Config extends ScriptableService {
   @runtimeProperty("ModSettings.displayValues.Orange", "DialogueHistory-Color-Orange")
   @runtimeProperty("ModSettings.displayValues.Grey", "DialogueHistory-Color-Grey")
   @runtimeProperty("ModSettings.displayValues.DarkGrey", "DialogueHistory-Color-DarkGrey")
-  private let holocallLineTypeColor: Color = Color.Blue;
+  private let holocallLineTypeColor: Color = Color.LightPurple;
 
   @runtimeProperty("ModSettings.mod", "Dialogue History")
   @runtimeProperty("ModSettings.category", "DialogueHistory-Config-Colors")
