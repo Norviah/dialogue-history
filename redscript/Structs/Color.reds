@@ -24,9 +24,11 @@ public enum Color {
   MildGreen = 19,
   ActiveGreen = 20,
   DarkGreen = 21,
-  Orange = 22,
-  Grey = 23,
-  DarkGrey = 24,
+  Purple = 22,
+  LightPurple = 23,
+  Orange = 24,
+  Grey = 25,
+  DarkGrey = 26,
 }
 
 public func ColorToName(color: Color) -> CName {
@@ -75,6 +77,10 @@ public func ColorToName(color: Color) -> CName {
       return n"MainColors.ActiveGreen";
     case Color.DarkGreen:
       return n"MainColors.DarkGreen";
+    case Color.Purple:
+      return n"MainColors.Purple";
+    case Color.LightPurple:
+      return n"MainColors.LightPurple";
     case Color.Orange:
       return n"MainColors.Orange";
     case Color.Grey:
