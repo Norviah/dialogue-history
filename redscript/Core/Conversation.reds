@@ -13,6 +13,8 @@ public class Conversation {
 
   private persistent let m_saved: Bool;
 
+  private persistent let m_title: CName;
+
   public final func AddLine(line: DialogueLine) -> Void {
     if !ArrayContains(this.m_types, line.type) {
       ArrayPush(this.m_types, line.type);
@@ -25,7 +27,7 @@ public class Conversation {
     return this.m_types;
   }
 
-  public final func GetNames() -> String {
+  public func GetSpeakerNames() -> String {
     let names: [String] = [];
 
     for line in this.m_lines {
@@ -37,6 +39,22 @@ public class Conversation {
     }
 
     return ArrayJoin(names, ",", " &");
+  }
+
+  public func HasCustomTitle() -> Bool {
+    return IsNameValid(this.m_title);
+  }
+
+  public func GetCustomTitle() -> String {
+    return NameToString(this.m_title);
+  }
+
+  public func SetCustomTitle(title: String) -> Void {
+    this.m_title = StringToName(title);
+  }
+
+  public func GetName() -> String {
+    return this.HasCustomTitle() ? NameToString(this.m_title) : this.GetSpeakerNames();
   }
 
   public final func HasType(type: scnDialogLineType) -> Bool {

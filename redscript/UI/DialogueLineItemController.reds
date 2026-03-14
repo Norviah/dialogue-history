@@ -25,14 +25,16 @@ public class DialogueLineItemController extends ListItemController {
     let data: ref<DialogueLineData> = value as DialogueLineData;
     let line: DialogueLine = data.m_line;
 
+    let speakerName: String = GetLocalizedText(NameToString(line.speakerName));
+
     this.m_textRef.widget.BindProperty(n"tintColor", ColorToName(this.m_config.textColor));
-    this.m_nameRef.widget.BindProperty(n"tintColor", ColorToName(Equals(line.speakerName, n"V") ? this.m_config.vSpeakerColor : this.m_config.GetColor(line.type)));
+    this.m_nameRef.widget.BindProperty(n"tintColor", ColorToName(Equals(speakerName, "V") ? this.m_config.vSpeakerColor : this.m_config.GetColor(line.type)));
     this.m_timeRef.widget.BindProperty(n"tintColor", ColorToName(this.m_config.timeColor));
 
     this.m_textRef.SetWrappingAtPosition(this.m_config.subtitleTextLength);
 
     inkTextRef.SetText(this.m_textRef, NameToString(line.text));
-    inkTextRef.SetText(this.m_nameRef, s"\(GetLocalizedText(NameToString(line.speakerName))):");
+    inkTextRef.SetText(this.m_nameRef, s"\(speakerName):");
     inkTextRef.SetText(this.m_timeRef, TimeStamp.FormatTime(line.timestamp, this.m_config.timeFormat));
 
     inkWidgetRef.SetVisible(this.m_timeRef, this.m_config.showTimestamps);

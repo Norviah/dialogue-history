@@ -47,6 +47,27 @@ public class ConversationListItemController extends inkVirtualCompoundItemContro
     if event.IsAction(n"UI_smart_frame_remove") {
       this.ToggleSave();
     }
+
+    if event.IsAction(n"brightness_settings") {
+      this.QueueEvent(ConversationNameChangeEvent.Create(this));
+    }
+  }
+
+  public func GetLabel() -> String {
+    return inkTextRef.GetText(this.m_labelRef);
+  }
+
+  public func GetConversationSpeakers() -> String {
+    return this.m_conversation.GetSpeakerNames();
+  }
+
+  public func SetTitle(string: String) -> Void {
+    this.m_conversation.SetCustomTitle(string);
+    this.UpdateText();
+  }
+
+  public func UpdateText() -> Void {
+    inkTextRef.SetText(this.m_labelRef, this.m_conversation.GetName());
   }
 
   protected cb func OnDataChanged(value: Variant) -> Bool {
@@ -55,7 +76,7 @@ public class ConversationListItemController extends inkVirtualCompoundItemContro
     this.m_conversation = this.m_data.m_conversation;
     this.m_menuController = this.m_data.m_menuController;
 
-    inkTextRef.SetText(this.m_labelRef, this.m_conversation.GetNames());
+    this.UpdateText();
 
     let lastLine = this.m_conversation.GetLastLine();
     let array: [String] = [];
@@ -154,4 +175,3 @@ public class ConversationListItemController extends inkVirtualCompoundItemContro
     }
   }
 }
-

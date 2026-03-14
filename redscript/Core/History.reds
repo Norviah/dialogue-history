@@ -103,14 +103,13 @@ public class History extends ScriptableSystem {
     }
   }
 
-  public func AddLine(rawLine: scnDialogLineData) -> Void {
+  public func AddLine(rawLine: scnDialogLineData, resourcePath: String) -> Void {
     if rawLine.isPersistent {
       return;
     }
 
     let line: DialogueLine = this.ParseLineData(rawLine);
-    let resourceSubtitleResource: SubtitleResource = this.m_subtitleManager.FindResource(rawLine);
-    let conversation: ref<Conversation> = this.GetConversation(resourceSubtitleResource.m_path);
+    let conversation: ref<Conversation> = this.GetConversation(resourcePath);
     conversation.AddLine(line);
 
     this.ReIndexConversation(conversation);

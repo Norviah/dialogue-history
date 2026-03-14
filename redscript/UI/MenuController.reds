@@ -58,6 +58,8 @@ public class DialogueHistoryMenuController extends gameuiMenuGameController {
 
   protected let m_resetConfirmationToken: ref<inkGameNotificationToken>;
 
+  protected let m_nameChangeToken: ref<inkGameNotificationToken>;
+
   protected let m_dataToDelete: wref<ConversationListItemData>;
 
   protected let m_config: wref<Config>;
@@ -290,6 +292,7 @@ public class DialogueHistoryMenuController extends gameuiMenuGameController {
 
     this.m_buttonHintsController.AddButtonHint(n"UI_smart_frame_remove", GetLocalizedTextByKey(event.m_conversation.IsSaved() ? n"DialogueHistory-UI-UnsaveConversation" : n"DialogueHistory-UI-SaveConversation")); // R / Y / Triangle
     this.m_buttonHintsController.AddButtonHint(n"upgrade_cyberware", GetLocalizedTextByKey(n"DialogueHistory-UI-DeletePrompt-Label")); // E / X / Square
+    this.m_buttonHintsController.AddButtonHint(n"brightness_settings", "Edit Name"); // Z / L3
 
     if NotEquals(this.m_selectedConversation, event.m_conversation) {
       this.m_buttonHintsController.AddButtonHint(n"click", GetLocalizedTextByKey(n"DialogueHistory-UI-ShowConversation"));
@@ -334,6 +337,32 @@ public class DialogueHistoryMenuController extends gameuiMenuGameController {
     };
   }
 
+  protected cb func OnConversationNameChangePrompt(event: ref<ConversationNameChangeEvent>) -> Void {
+    if IsDefined(this.m_nameChangeToken) {
+      return;
+    }
+
+    let title: String = "Change Conversation Name?";
+    let description: String = s"Enter the new name for the conversation with \(event.m_controller.GetConversationSpeakers()):";
+
+    this.m_nameChangeToken = TextPromptController.Show(this, title, description, event.m_controller);
+    this.m_nameChangeToken.RegisterListener(this, n"OnConversationNameChangePromptClose");
+  }
+
+  protected cb func OnConversationNameChangePromptClose(data: ref<inkGameNotificationData>) -> Bool {
+    let resultData: ref<TextPromptCloseData> = data as TextPromptCloseData;
+
+    if IsDefined(resultData) && Equals(resultData.result, GenericMessageNotificationResult.Confirm) && IsDefined(resultData.item) {
+      resultData.item.SetTitle(resultData.text);
+
+      if this.m_conversationListDataView.HasSearchTerm() {
+        this.m_conversationListDataView.Filter();
+      }
+    }
+
+    this.m_nameChangeToken = null;
+  }
+
   protected cb func OnConversationDeletePrompt(event: ref<DeleteConversationEvent>) -> Void {
     if IsDefined(this.m_resetConfirmationToken) {
       return;
@@ -342,7 +371,7 @@ public class DialogueHistoryMenuController extends gameuiMenuGameController {
     this.m_dataToDelete = event.m_data;
 
     let title: String = GetLocalizedTextByKey(n"DialogueHistory-UI-DeletePrompt-Title");
-    let description: String = StrReplaceAll(GetLocalizedTextByKey(n"DialogueHistory-UI-DeletePrompt-Description"), "{NAME}", event.m_data.m_conversation.GetNames());
+    let description: String = StrReplaceAll(GetLocalizedTextByKey(n"DialogueHistory-UI-DeletePrompt-Description"), "{NAME}", event.m_data.m_conversation.GetName());
 
     this.m_resetConfirmationToken = GenericMessageNotification.Show(this, title, description, GenericMessageNotificationType.ConfirmCancel);
     this.m_resetConfirmationToken.RegisterListener(this, n"OnDeletePromptClosed");

@@ -69,6 +69,10 @@ class ConversationListDataView extends ScriptableDataView {
   public func ConversationHasTerm(conversation: wref<Conversation>) -> Bool {
     let lines: [DialogueLine] = conversation.GetLines();
 
+    if conversation.HasCustomTitle() && StrContains(UTF8StrUpper(conversation.GetCustomTitle()), this.m_searchTerm) {
+      return true;
+    }
+
     for line in lines {
       if this.IsLineFrom(line) || this.DoesLineHave(line) || this.IsLineAt(line) {
         return true;

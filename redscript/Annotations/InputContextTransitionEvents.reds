@@ -53,19 +53,47 @@ protected final func RemoveDialogueHistoryInputHints(stateContext: ref<StateCont
 
 @wrapMethod(InputContextTransitionEvents)
 protected final func SetBaseContextInputHints(context: ActiveBaseContext, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-  if this.m_dhConfig.showInputHint && (Equals(context, ActiveBaseContext.Locomotion) || Equals(context, ActiveBaseContext.None)) {
-    this.OpenDialogueHistoryInputHints(stateContext, scriptInterface);
-  } else if this.IsDialogueHistoryInputHintDisplayed(stateContext) {
-    this.RemoveDialogueHistoryInputHints(stateContext, scriptInterface);
-  }
+  // if NotEquals(context, ActiveBaseContext.None) {
+  //   if this.m_dhConfig.showInputHint {
+  //     this.OpenDialogueHistoryInputHints(stateContext, scriptInterface);
+  //   } else if this.IsDialogueHistoryInputHintDisplayed(stateContext) {
+  //     this.RemoveDialogueHistoryInputHints(stateContext, scriptInterface);
+  //   }
+  // }
 
   wrappedMethod(context, stateContext, scriptInterface);
+
+
+  // if NotEquals(context, ActiveBaseContext.None) && this.m_dhConfig.showInputHint {
+  //   FTLog(s"context: \(context)");
+  //   this.OpenDialogueHistoryInputHints(stateContext, scriptInterface);
+  // }
+
+  // if NotEquals(context, ActiveBaseContext.None) && this.m_dhConfig.showInputHint {
+  //   this.OpenDialogueHistoryInputHints(stateContext, scriptInterface);
+  // }
+}
+
+@wrapMethod(InputContextTransitionEvents)
+protected final const func ShowGenericExplorationInputHints(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+  // if Equals(stateContext.GetStateMachineCurrentState(n"CombatGadget"), n"combatGadgetCharge") {
+  //   this.ShowInputHint(scriptInterface, n"CancelChargingCG", n"Locomotion", "LocKey#49906");
+  // } else {
+  //   if !this.IsEmptyHandsForced(stateContext, scriptInterface) {
+  //     this.ShowInputHint(scriptInterface, n"SwitchItem", n"Locomotion", "LocKey#45381");
+  //   };
+  // };
+  // this.ShowCrouchInputHint(stateContext, scriptInterface, n"Locomotion");
+  // stateContext.SetPermanentBoolParameter(n"isLocomotionInputHintDisplayed", true, true);
+  wrappedMethod(stateContext, scriptInterface);
+
+  // this.OpenDialogueHistoryInputHints(stateContext, scriptInterface);
 }
 
 @wrapMethod(InputContextTransitionEvents)
 protected final func RemoveAllInputHints(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-	this.RemoveDialogueHistoryInputHints(stateContext, scriptInterface);
 	wrappedMethod(stateContext, scriptInterface);
+	this.RemoveDialogueHistoryInputHints(stateContext, scriptInterface);
 }
 
 @wrapMethod(InputContextTransitionEvents)
@@ -95,3 +123,7 @@ private final func UpdateHints(stateContext: ref<StateContext>, scriptInterface:
 
   wrappedMethod(stateContext, scriptInterface);
 }
+
+// @wrapMethod(BaseContextEvents)
+// private final func UpdateHints(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+// }

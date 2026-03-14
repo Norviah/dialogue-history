@@ -1,0 +1,14 @@
+---
+KEYS
+---
+
+NEW
+- DialogueHistory-Color-Purple
+- DialogueHistory-Color-LightPurple
+
+---
+TODO
+---
+
+- make sure to get a valid date instance when printing it in conversations
+- change localization text for holocall to remove (not sure if used)
